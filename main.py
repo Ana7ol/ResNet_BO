@@ -1,3 +1,4 @@
+import os
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -271,8 +272,18 @@ def plot_optimization(x_train, y_train, gp, bounds, iteration):
     ax[1].set_ylabel('Acquisition Value')
     ax[1].set_xlabel('Log Learning Rate')
     ax[1].grid(True, alpha=0.3)
-    
+
     plt.tight_layout()
+
+    if not os.path.exists("plots"):
+        os.makedirs("plots")
+        print("    [Created 'plots/' directory]")
+
+    # 2. Save the figure
+    filename = f"plots/iteration_{iteration:02d}.png"
+    plt.savefig(filename)
+    print(f"    [Plot saved to {filename}]")
+    
     plt.show()
 
 def run_test():
