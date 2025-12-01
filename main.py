@@ -177,6 +177,7 @@ def objective_function(log_lr, args, device, train_loader, val_loader):
     # Training
     model.train()
     for epoch in range(args.epochs):
+        running_loss = 0.0
         for data, target in train_loader:
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
@@ -184,9 +185,8 @@ def objective_function(log_lr, args, device, train_loader, val_loader):
             loss = criterion(output, target)
             loss.backward()
             optimizer.step()
-        
-        # Simple print to indicate progress without cluttering
-        # print(f"    Epoch {epoch+1} done.")
+            running_loss = loss.item()
+        print(f"    Epoch {epoch+1}/{args.epochs} Loss: {running_loss:.4f}")
 
     # Validation
     model.eval()
@@ -202,7 +202,8 @@ def objective_function(log_lr, args, device, train_loader, val_loader):
 
     accuracy = correct / total
     error_rate = 1.0 - accuracy
-    print(f"    Result: Accuracy = {accuracy:.4f}, Error = {error_rate:.4f}")
+    print(f"    Result: Accuracy = {accuracy:.4f} ({accuracy*100:.2f}%), Error = {error_rate:.4f}")
+
     return error_rate
 
 def weighted_expected_improvement(x, Y_sample, gp, xi=0.01):
