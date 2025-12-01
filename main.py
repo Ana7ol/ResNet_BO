@@ -20,7 +20,7 @@ def get_args():
     
     # Model & Training
     parser.add_argument("--in_channels", type=int, default=64, help="Base channels for ResNet.")
-    parser.add_argument("--epochs", type=int, default=5, help="Training epochs per BO iteration.")
+    parser.add_argument("--epochs", type=int, default=10, help="Training epochs per BO iteration.")
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size for dataloaders.")
     
     # Bayesian Optimization
@@ -168,7 +168,7 @@ def objective_function(log_lr, args, device, train_loader, val_loader):
     Returns: Validation Error (1 - Accuracy).
     """
     lr = 10**log_lr
-    print(f"--- Eval: lr = {lr:.5f} (log_lr = {log_lr:.4f}) ---")
+    print(f"\n--- Eval: lr = {lr:.5f} (log_lr = {log_lr:.4f}) ---")
 
     model = ResNet18(base_channels=args.in_channels).to(device)
     optimizer = optim.SGD(model.parameters(), lr=lr)
@@ -327,6 +327,7 @@ def main():
     y_train = []
     print(f"\n=== Initial Design (Sobol: {args.init_steps} steps) ===")
     for i, x in enumerate(x_train):
+        print(f"\nInitial Step {i+1}/{args.init_steps}")
         y = objective_function(x[0], args, device, train_loader, val_loader)
         y_train.append(y)
     
@@ -370,6 +371,7 @@ def main():
     print(f"Best Log LR: {x_train[best_idx][0]:.4f}")
     print(f"Best Real LR: {10**x_train[best_idx][0]:.6f}")
     print(f"Best Error Rate: {y_train[best_idx]:.4f}")
+    print(f"Best Accuracy: {(1-y_train[best_idx])*100:.2f}%")
 
 if __name__ == "__main__":
     # Check if testing mode is requested via args, otherwise run main
